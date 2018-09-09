@@ -14,8 +14,139 @@
   <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/dark.css" title="dark" disabled>
   <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/buble.css" title="buble" disabled>
   <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/pure.css" title="pure" disabled>
+  	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+  
+	<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+	<!-- Firebase App is always required and must be first -->
+		<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-app.js"></script>
+
+		<!-- Add additional services that you want to use -->
+		<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-auth.js"></script>
+		
+
+		<!-- Comment out (or don't include) services that you don't want to use -->
+		<!-- <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-storage.js"></script> -->
+	
+	<script type="text/javascript">
+    /**
+     * Handles the sign in button press.
+     */
+	 function loadJS(file) {
+    // DOM: Create the script element
+    var jsElm = document.createElement("script");
+    // set the type attribute
+    jsElm.type = "application/javascript";
+    // make the script element load file
+    jsElm.src = file;
+    // finally insert the element to the body element in order to load the script
+    document.body.appendChild(jsElm);
+}
+    function toggleSignIn() {
+      if (firebase.auth().currentUser) {
+        // [START signout]
+        firebase.auth().signOut();
+        // [END signout]
+      } else {
+        var email = 'oovn_user@simon.right.tips';
+		//document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        if (email.length < 4) {
+          alert('Please enter an email address.');
+          return;
+        }
+        if (password.length < 4) {
+          alert('Please enter a password.');
+          return;
+        }
+        // Sign in with email and pass.
+        // [START authwithemail]
+        firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // [START_EXCLUDE]
+          if (errorCode === 'auth/wrong-password') {
+            alert('Wrong password.');
+          } else {
+            alert(errorMessage);
+          }
+          console.log(error);
+          document.getElementById('quickstart-sign-in').disabled = false;
+          // [END_EXCLUDE]
+        });
+        // [END authwithemail]
+      }
+      //document.getElementById('quickstart-sign-in').disabled = true;
+    }
+	 // Initialize Firebase
+	  
+    function initApp() {
+      // Listening for auth state changes.
+      // [START authstatelistener]
+      firebase.auth().onAuthStateChanged(function(user) {
+        // [START_EXCLUDE silent]
+        //document.getElementById('quickstart-verify-email').disabled = true;
+        // [END_EXCLUDE]
+        if (user) {
+          // User is signed in.		  
+		  loadJS("//unpkg.com/docsify/lib/docsify.min.js");
+		  document.getElementById("mainbody").style.display = "none";		  
+		  
+          var displayName = user.displayName;
+          var email = user.email;
+          var emailVerified = user.emailVerified;
+          var photoURL = user.photoURL;
+          var isAnonymous = user.isAnonymous;
+          var uid = user.uid;
+          var providerData = user.providerData;
+          // [START_EXCLUDE]
+          //document.getElementById('quickstart-sign-in-status').textContent = 'Signed in';
+          document.getElementById('quickstart-sign-in').textContent = 'Sign out';
+          
+		  
+          if (!emailVerified) {
+            // document.getElementById('quickstart-verify-email').disabled = false;
+			
+          }
+          // [END_EXCLUDE]
+        } else {
+          // User is signed out.
+          // [START_EXCLUDE]
+          //document.getElementById('quickstart-sign-in-status').textContent = 'Signed out';
+          document.getElementById('quickstart-sign-in').textContent = 'Sign in';
+          document.getElementById('mainbody').style.display = "block";
+          // [END_EXCLUDE]
+        }
+        // [START_EXCLUDE silent]
+        // document.getElementById('quickstart-sign-in').disabled = false;
+        // [END_EXCLUDE]
+      });
+      // [END authstatelistener]
+     // Confirm the link is a sign-in with email link.
+ 
+    }
+    window.onload = function() {
+	var config = {
+		apiKey: "AIzaSyCeqL-5jUGlohmt-2tAol5oRc53G-C48zA",
+		authDomain: "wmprogram-a3915.firebaseapp.com",
+		databaseURL: "https://wmprogram-a3915.firebaseio.com",
+		projectId: "wmprogram-a3915",
+		storageBucket: "wmprogram-a3915.appspot.com",
+		messagingSenderId: "1086605808074"
+	  };		  
+	  firebase.initializeApp(config);
+      initApp();
+	  
+    };
+  </script>
   <script src="//unpkg.com/docsify-plugin-codefund/index.js"></script>
   <script src="https://unpkg.com/docsify-copy-code@2"></script>
+  
+
   <style>
     nav.app-nav li ul {
       min-width: 100px;
@@ -24,45 +155,98 @@
 </head>
 
 <body>
-  <div id="app">Loading ...</div>
+	<nav>
+		<a href="" id="a-sign-out">Logout</a>	
+	</nav>
+	<div class="limiter" id="mainbody" style="display:none;">
+		<div class="container-login100">
+			<div class="wrap-login100 p-t-50 p-b-90">
+				<div class="login100-form validate-form flex-sb flex-w">
+					<span class="login100-form-title p-b-51">
+						Login
+					</span>
+					<div class="wrap-input100 validate-input m-b-16" data-validate = "Password is required">
+						<input class="input100" type="password" id="password" name="password" placeholder="Password">
+						<span class="focus-input100"></span>
+					</div>
+					<div class="container-login100-form-btn m-t-17">
+						<button class="login100-form-btn" id="quickstart-sign-in" name="signin">
+							Login
+						</button>
+					</div>
+
+				</form>
+			</div>
+		</div>
+		</div>
+</div>
+	<!-- <main class="mdl-layout__content mdl-color--grey-100" style="display:none;" id="mainbody" > -->
+    <!-- <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid"  > -->
+
+      <!-- <!-- Container for the demo
+      <!-- <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop"> -->
+        <!-- <div class="mdl-card__title mdl-color--light-blue-600 mdl-color-text--white"> -->
+          <!-- <h2 class="mdl-card__title-text">Firebase Email &amp; Password Authentication</h2> -->
+        <!-- </div> -->
+        <!-- <div class="mdl-card__supporting-text mdl-color-text--grey-600"> -->
+          <!-- <p>Enter an email and password below and either sign in to an existing account or sign up</p> -->
+
+          <!-- <input class="mdl-textfield__input" style="display:inline;width:auto;" type="text" id="email" name="email" placeholder="Email"/> -->
+          <!-- &nbsp;&nbsp;&nbsp; -->
+          <!-- <input class="mdl-textfield__input" style="display:inline;width:auto;" type="password" id="password" name="password" placeholder="Password"/> -->
+          <!-- <br/><br/> -->
+          <!-- <button class="" id="quickstart-sign-in" name="signin">Sign In</button> -->
+          
+          <!-- <!-- Container where we'll display the user details -->
+          <!-- <div class="quickstart-user-details-container"> -->
+            <!-- Firebase sign-in status: <span id="quickstart-sign-in-status">Unknown</span> -->
+            
+          <!-- </div> -->
+        <!-- </div> -->
+      <!-- </div> -->
+
+    <!-- </div> -->
+	
+  <!-- </main> -->
+
+	<div id="app" >Loading ...</div>
+
   <script>
-    window.$docsify = {
+    	window.$docsify = {
      
-      loadSidebar: true,
-      loadNavbar: true,
-      mergeNavbar: true,
-      maxLevel: 4,
-      subMaxLevel: 3,
-      
-      name: 'WeChat',
-      search: {
-        noData: {
-          '/de-de/': 'Keine Ergebnisse!',
-          '/zh-cn/': '没有结果!',
-          '/': 'No results!'
-        },
-        paths: 'auto',
-        placeholder: {
-          '/de-de/': 'Suche',
-          '/zh-cn/': '搜索',
-          '/': 'Search'
-        }
-      }
-    }
+			  loadSidebar: true,
+			  loadNavbar: true,
+			  mergeNavbar: true,
+			  maxLevel: 4,
+			  subMaxLevel: 3,
+			  
+			  name: 'WeChat',
+			  search: {
+				noData: {
+				  '/de-de/': 'Keine Ergebnisse!',
+				  '/zh-cn/': '没有结果!',
+				  '/': 'No results!'
+				},
+				paths: 'auto',
+				placeholder: {
+				  '/de-de/': 'Suche',
+				  '/zh-cn/': '搜索',
+				  '/': 'Search'
+				}
+			  }
+			}
+	document.getElementById('quickstart-sign-in').addEventListener('click', toggleSignIn, false);
+	document.getElementById('a-sign-out').addEventListener('click', toggleSignIn, false);
   </script>
-  <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+
   <script src="//unpkg.com/docsify/lib/plugins/search.min.js"></script>
-  <script src="//unpkg.com/docsify/lib/plugins/ga.min.js"></script>
-  <script src="//unpkg.com/prismjs/components/prism-bash.min.js"></script>
-  <script src="//unpkg.com/prismjs/components/prism-markdown.min.js"></script>
-  <script src="//unpkg.com/prismjs/components/prism-nginx.min.js"></script>
-  
-  <script>
-  ((window.gitter = {}).chat = {}).options = {
-    room: 'docsifyjs/Lobby'
-  };
-  </script>
-  
+  <!-- <script src="//unpkg.com/docsify/lib/plugins/ga.min.js"></script> -->
+  <!-- <script src="//unpkg.com/prismjs/components/prism-bash.min.js"></script> -->
+  <!-- <script src="//unpkg.com/prismjs/components/prism-markdown.min.js"></script> -->
+  <!-- <script src="//unpkg.com/prismjs/components/prism-nginx.min.js"></script> -->
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+	<script src="js/main.js"></script>
+
 </body>
 
 </html>
